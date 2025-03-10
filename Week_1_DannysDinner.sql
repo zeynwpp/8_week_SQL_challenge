@@ -22,11 +22,29 @@ from dannys_diner.sales s
 group by s.customer_id
 
 -- 3. What was the first item from the menu purchased by each customer?
-
+select distinct ss.customer_id
+,m.product_name
+from dannys_diner.sales ss
+inner join dannys_diner.menu m on m.product_id = ss.product_id
+inner join (
+    SELECT s.customer_id
+	,MIN(s.order_date) as min_date
+    FROM dannys_diner.sales s
+	group by s.customer_id
+) t on t.min_date = ss.order_date
 
 
 -- 4. What is the most purchased item on the menu and how many times was it purchased by all customers?
+select m.product_name
+,count(*) as sum_purchased
+from dannys_diner.sales s
+inner join dannys_diner.menu m on m.product_id = s.product_id
+group by m.product_name
+
+
 -- 5. Which item was the most popular for each customer?
+
+
 -- 6. Which item was purchased first by the customer after they became a member?
 -- 7. Which item was purchased just before the customer became a member?
 -- 8. What is the total items and amount spent for each member before they became a member?
