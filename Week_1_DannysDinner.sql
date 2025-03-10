@@ -62,6 +62,26 @@ where pc.rnk = 1;
 
 -- 6. Which item was purchased first by the customer after they became a member?
 
+with after_member_orders as(
+select m.customer_id
+,mn.product_name
+,s.order_date
+from dannys_diner.members m
+inner join dannys_diner.sales s on s.customer_id = m.customer_id
+inner join dannys_diner.menu mn on mn.product_id = s.product_id
+where s.order_date >= m.join_date
+), 
+ranked_orders as (
+select a.customer_id
+,a.product_name
+,row_number() over(partition by a.customer_id order by a.order_date ) as rank_
+from after_member_orders a
+)
+select r.customer_id
+,r.product_name
+from ranked_orders r
+where r.rank_ = 1
+
 
 
 -- 7. Which item was purchased just before the customer became a member?
