@@ -86,8 +86,30 @@ where r.rank_ = 1
 
 -- 7. Which item was purchased just before the customer became a member?
 
+with before_member_orders as(
+select m.customer_id
+,mn.product_name
+,s.order_date
+from dannys_diner.members m
+inner join dannys_diner.sales s on s.customer_id = m.customer_id
+inner join dannys_diner.menu mn on mn.product_id = s.product_id
+where s.order_date < m.join_date
+), 
+ranked_orders as (
+select a.customer_id
+,a.product_name
+,row_number() over(partition by a.customer_id order by a.order_date desc) as rank_
+from before_member_orders a
+)
+
+select r.customer_id
+,r.product_name
+from ranked_orders r
+where r.rank_ = 1
+
 
 -- 8. What is the total items and amount spent for each member before they became a member?
+
 
 
 -- 9.  If each $1 spent equates to 10 points and sushi has a 2x points multiplier - how many points would each customer have?
