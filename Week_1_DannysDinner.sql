@@ -109,12 +109,56 @@ where r.rank_ = 1
 
 
 -- 8. What is the total items and amount spent for each member before they became a member?
-
+select mb.customer_id
+,m.product_name
+,sum(m.price) as amount_spent
+from dannys_diner.menu m
+inner join dannys_diner.sales s on s.product_id = m.product_id
+inner join dannys_diner.members mb on mb.customer_id = s.customer_id
+where s.order_date < mb.join_date
+group by mb.customer_id
+,m.product_name
 
 
 -- 9.  If each $1 spent equates to 10 points and sushi has a 2x points multiplier - how many points would each customer have?
 
+with points_table as (
+select mb.customer_id
+,m.product_name
+,sum(m.price) *
+case when m.product_name = 'sushi' then 20 
+	else 10
+	end as Points
+from dannys_diner.menu m
+inner join dannys_diner.sales s on s.product_id = m.product_id
+inner join dannys_diner.members mb on mb.customer_id = s.customer_id
+where s.order_date < mb.join_date
+group by mb.customer_id
+,m.product_name)
+
+select p.customer_id
+,sum(p.points) as sum_points
+from points_table p
+group by p.customer_id
+
 
 -- 10. In the first week after a customer joins the program (including their join date) they earn 2x points on all items, not just sushi - how many points do customer A and B have at the end of January?
-
+with points_table as (
+   select
+        s.customer_id,
+        m.product_name,
+        SUM(m.price * 
+		 case when DATEDIFF(day, mb.join_date, s.order_date) BETWEEN 0 AND 6 THEN 20  
+            when m.product_name = 'sushi' THEN 20  -- Sushi için 2x puan (10 yerine 20)
+            else 10  -- Diğerleri normal puan
+        end) as total_points
+    FROM dannys_diner.sales s
+    INNER JOIN dannys_diner.menu m ON s.product_id = m.product_id
+    INNER JOIN dannys_diner.members mb ON s.customer_id = mb.customer_id
+    WHERE s.order_date <= '20210131'
+    GROUP BY s.customer_id, m.product_name
+)
+select customer_id, SUM(total_points) as total_points
+from points_table
+group by customer_id
 
