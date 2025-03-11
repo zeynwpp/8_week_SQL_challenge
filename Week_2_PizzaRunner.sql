@@ -1,6 +1,11 @@
 --A. Pizza Metrics
 --How many pizzas were ordered?
+select COUNT(o.order_id) as order_count
+from pizza_runner.customer_orders o
+
 --How many unique customer orders were made?
+
+
 --How many successful orders were delivered by each runner?
 --How many of each type of pizza was delivered?
 --How many Vegetarian and Meatlovers were ordered by each customer?
