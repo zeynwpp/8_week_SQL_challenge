@@ -52,10 +52,19 @@ group by c.customer_id
 
 
 --How many pizzas were delivered that had both exclusions and extras?
+select COUNT(c.pizza_id) as result
+from pizza_runner.customer_orders c
+inner join pizza_runner.runner_orders r on r.order_id = c.order_id
+where c.exclusions is not null
+and c.extras is not null
+and r.cancellation is null
 
 
 --What was the total volume of pizzas ordered for each hour of the day?
 
 
+
+
 --What was the volume of orders for each day of the week?
+
 
