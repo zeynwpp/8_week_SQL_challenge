@@ -32,10 +32,30 @@ group by p.pizza_name, c.customer_id
 
 
 --What was the maximum number of pizzas delivered in a single order?
-
+select max(z.count_order) as max_order
+from (
+	select count(c.pizza_id) as count_order
+	from pizza_runner.customer_orders c
+	group by c.order_id
+) z
 
 
 --For each customer, how many delivered pizzas had at least 1 change and how many had no changes?
+select c.customer_id
+,count(case when c.exclusions is null or c.extras is not null then c.pizza_id end) as changed_pizza
+,count(case when c.exclusions is null and c.extras is null then c.pizza_id end) as no_change_pizza
+from pizza_runner.customer_orders c
+inner join pizza_runner.runner_orders r on r.order_id = c.order_id
+where r.cancellation is null
+group by c.customer_id
+
+
+
 --How many pizzas were delivered that had both exclusions and extras?
+
+
 --What was the total volume of pizzas ordered for each hour of the day?
+
+
 --What was the volume of orders for each day of the week?
+
