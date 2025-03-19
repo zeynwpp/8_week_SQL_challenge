@@ -122,10 +122,24 @@ group by p.count_pizza
 
 
 --What was the average distance travelled for each customer?
-
+WITH cleaned_data AS (
+    SELECT r.order_id,
+        runner_id, 
+        CAST(REPLACE(r.distance, 'km', '') AS FLOAT) AS distance_float
+    FROM runner_orders r
+    WHERE r.distance IS NOT NULL AND r.distance NOT IN ('', 'null')
+)
+SELECT c.customer_id,
+avg(d.distance_float) as avg_distance
+FROM cleaned_data d
+inner join customer_orders c on d.order_id = c.order_id
+group by c.customer_id
 
 
 
 --What was the difference between the longest and shortest delivery times for all orders?
+
+
+
 --What was the average speed for each runner for each delivery and do you notice any trend for these values?
 --What is the successful delivery percentage for each runner?
