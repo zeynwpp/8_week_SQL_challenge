@@ -138,8 +138,23 @@ group by c.customer_id
 
 
 --What was the difference between the longest and shortest delivery times for all orders?
+with delivery as (SELECT order_id,
+runner_id, 
+cast(
+	replace(
+      replace(
+        replace(r.duration, 'minutes', ''), 'minute', ''), 'mins', '') as INT 
+) as duration_int
+FROM runner_orders r
+WHERE duration IS NOT NULL AND duration NOT IN ('', 'null'))
 
+
+select max(d.duration_int) - min(d.duration_int) as difference
+from delivery d
 
 
 --What was the average speed for each runner for each delivery and do you notice any trend for these values?
+
+
+
 --What is the successful delivery percentage for each runner?
