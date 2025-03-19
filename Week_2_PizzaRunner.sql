@@ -106,10 +106,26 @@ group by c.runner_id
 
 
 --Is there any relationship between the number of pizzas and how long the order takes to prepare?
+with prepare_pizza as
+(select c.order_id,
+count(c.pizza_id) as count_pizza,
+datediff(minute, c.order_time, r.pickup_time) as prepared
+from runner_orders r
+inner join customer_orders c on r.order_id = c.order_id
+where datediff(minute, c.order_time, r.pickup_time) is not null
+group by datediff(minute, c.order_time, r.pickup_time), c.order_id)
 
+select p.count_pizza
+,avg(p.prepared) as avg_time
+from prepare_pizza p
+group by p.count_pizza
 
 
 --What was the average distance travelled for each customer?
+
+
+
+
 --What was the difference between the longest and shortest delivery times for all orders?
 --What was the average speed for each runner for each delivery and do you notice any trend for these values?
 --What is the successful delivery percentage for each runner?
