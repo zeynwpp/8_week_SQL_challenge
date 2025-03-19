@@ -77,8 +77,38 @@ group by  DATENAME(WEEKDAY, c.order_time)
 
 --B. Runner and Customer Experience
 --How many runners signed up for each 1 week period? (i.e. week starts 2021-01-01)
+DECLARE @startdate date 
+set @startdate = (
+select min(registration_date) from runners
+)
+
+select datediff(week, @startdate, registration_date) + 1 as week_number
+,COUNT(*) as runners_signed_Up
+from runners
+group by datediff(week, @startdate, registration_date)
+ORDER by week_number
+
+
 --What was the average time in minutes it took for each runner to arrive at the Pizza Runner HQ to pickup the order?
+with cleaned_data as (SELECT runner_id, 
+cast(
+	replace(
+      replace(
+        replace(r.duration, 'minutes', ''), 'minute', ''), 'mins', '') as INT 
+) as duration_int
+FROM runner_orders r
+WHERE duration IS NOT NULL AND duration NOT IN ('', 'null'))
+
+select c.runner_id
+,avg(c.duration_int)
+from cleaned_data c
+group by c.runner_id
+
+
 --Is there any relationship between the number of pizzas and how long the order takes to prepare?
+
+
+
 --What was the average distance travelled for each customer?
 --What was the difference between the longest and shortest delivery times for all orders?
 --What was the average speed for each runner for each delivery and do you notice any trend for these values?
